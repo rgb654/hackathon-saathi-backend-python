@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+pydantic
+transformers
+pymilvus
+numpy
+python-dotenv
+torch
+scikit-learn
+bson
+pymongo
+google-generativeai
+google-genai
