@@ -15,8 +15,8 @@ def healthcheck():
 @app.get("/updateSkills")
 def update_skills_list(payload: UpdateSkillsRequest):
     embedding = get_skill_embedding(payload.skills)
-    # return(embedding)
-    insert_participant(payload.idx, embedding)
+    return(embedding)
+    # insert_participant(payload.idx, embedding)
 
 @app.get("/updateHackathonSkills")
 def update_hackathon_skills(idx:str):

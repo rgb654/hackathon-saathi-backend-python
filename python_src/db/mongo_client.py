@@ -13,3 +13,6 @@ db = client[MONGO_DB]
 
 def get_hackathons_collection():
     return db["hackathons"]
+
+def get_users_collection():
+    return db["users"]
