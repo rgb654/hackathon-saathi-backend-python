@@ -22,9 +22,9 @@ def get_skill_embedding(skills):
 
     # Normalize the embedding (L2 norm)
     norm = np.linalg.norm(embedding)
-    if norm > 0:
-        normalized_embedding = embedding / norm
-    else:
+    if norm == 0:
         normalized_embedding = embedding
+    else:
+        normalized_embedding = embedding / norm
 
     return normalized_embedding

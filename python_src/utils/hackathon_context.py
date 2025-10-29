@@ -1,6 +1,6 @@
 from bson import ObjectId
-from db.mongo_client import get_hackathons_collection
-from models.hackathon import HackathonDreamTeam
+from ..db.mongo_client import get_hackathons_collection
+from ..models.hackathon import HackathonDreamTeam
 import json
 
 from google import genai
@@ -50,9 +50,10 @@ def generate_hackathon_context(hackathon_id: str) -> str:
     return flatten_document(clean_doc)
 
 
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 def generate_dream_team_skills(hackathon_context: str) -> HackathonDreamTeam:
+    client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+    
     response = client.models.generate_content(
         model="gemini-2.5-flash",
         contents=f"""
