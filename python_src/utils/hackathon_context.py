@@ -33,11 +33,16 @@ def flatten_document(doc, parent_key="", sep="."):
     return "\n".join(items)
 
 def generate_hackathon_context(hackathon_id: str) -> str:
-    collection = get_hackathons_collection()
-    doc = collection.find_one({"_id": ObjectId(hackathon_id)})
+    try:
+        collection = get_hackathons_collection()
+        doc = collection.find_one({"_id": ObjectId(hackathon_id)})
 
-    if not doc:
-        return f"No hackathon found with _id {hackathon_id}"
+        if not doc:
+            print(f" No hackathon found with _id {hackathon_id} in MongoDB")
+            raise ValueError(f"No hackathon found with _id {hackathon_id}")
+    except Exception as e:
+        print(f" Error fetching hackathon {hackathon_id} from MongoDB: {str(e)}")
+        raise
 
     # Convert ObjectId/Date types to JSON serializable
     def bson_default(obj):

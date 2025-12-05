@@ -35,16 +35,64 @@ def get_participant_collection():
     return Collection("participants")
 
 def insert_hackathon(hid: str, embedding: list):
+    """
+    Insert or update hackathon embedding in Milvus (upsert logic).
+    If hackathon exists, deletes old entry and inserts new one.
+    """
     ensure_milvus_connected()
     collection = get_hackathon_collection()
+    collection.load()  # Load collection for querying
+    
+    try:
+        # Check if hackathon already exists
+        existing = collection.query(
+            expr=f'hid == "{hid}"',
+            output_fields=["hid"]
+        )
+        
+        # If exists, delete old entry first (upsert behavior)
+        if existing:
+            print(f"Updating existing hackathon {hid} in Milvus")
+            collection.delete(expr=f'hid == "{hid}"')
+            collection.flush()
+        else:
+            print(f"Inserting new hackathon {hid} into Milvus")
+    except Exception as e:
+        print(f"Note: Could not check existing hackathon (will insert): {str(e)}")
+    
+    # Insert new embedding
     collection.insert([[hid], [embedding]])
-    collection.flush()  # ensure data is persisted
+    collection.flush()  # Ensure data is persisted
+    collection.load()  # Reload collection to make data queryable immediately
+    print(f"✅ Hackathon {hid} synced to Milvus successfully")
 
 def insert_participant(pid: str, embedding: list):
+    """
+    Insert or update participant embedding in Milvus (upsert logic).
+    If participant exists, deletes old entry and inserts new one.
+    """
     ensure_milvus_connected()
     collection = get_participant_collection()
+    collection.load()  # Load collection for querying
+    
+    try:
+        # Check if participant already exists
+        existing = collection.query(
+            expr=f'pid == "{pid}"',
+            output_fields=["pid"]
+        )
+        
+        # If exists, delete old entry first (upsert behavior)
+        if existing:
+            collection.delete(expr=f'pid == "{pid}"')
+            collection.flush()
+    except Exception as e:
+        print(f"Note: Could not check existing participant (will insert): {str(e)}")
+    
+    # Insert new embedding
     collection.insert([[pid], [embedding]])
-    collection.flush()  # ensure data is persisted
+    collection.flush()  # Ensure data is persisted
+    collection.load()  # Reload collection to make data queryable immediately
     
 def batch_insert_hackathons(hids: list, embeddings: list):
     ensure_milvus_connected()
